@@ -1,0 +1,118 @@
+include /etc/sway/config.d/*
+# FujiRuro-OS - Nomadic Workstation Environment
+# Based on optimized JP106 layout and Wayland-native tools.
+
+### Variables
+set $mod Mod4
+set $app Muhenkan
+set $left h
+set $down j
+set $up k
+set $right l
+set $term /usr/bin/foot
+set $menu ~/scripts/nomadic_launcher.sh
+set $browser /usr/bin/thorium-browser
+
+### Output configuration (Portrait Native -> Landscape)
+output * transform 90 scale 1.25
+
+### Input configuration (Touchscreen Mapping)
+input "10248:10530:FTSC1000:00_2808:2922" {
+    map_to_output DSI-1
+    calibration_matrix 1 0 0 0 1 0
+}
+
+# Apply layout to all keyboards
+input * {
+    xkb_layout jp
+    xkb_model jp106
+}
+
+# Hardware Key Overrides
+bindsym Zenkaku_Hankaku exec pkill -USR1 waybar
+bindsym Henkan exec ~/scripts/nomadic_yazi.sh
+
+### Key bindings - MANAGEMENT (Super)
+    bindsym $mod+q kill
+    bindsym $mod+Shift+q kill
+
+    bindsym $mod+Left focus left
+    bindsym $mod+Down focus down
+    bindsym $mod+Up focus up
+    bindsym $mod+Right focus right
+
+    bindsym $mod+1 workspace number 1
+    bindsym $mod+2 workspace number 2
+    bindsym $mod+3 workspace number 3
+    bindsym $mod+4 workspace number 4
+    bindsym $mod+5 workspace number 5
+    
+    bindsym $mod+Shift+1 move container to workspace number 1
+    bindsym $mod+Shift+2 move container to workspace number 2
+    bindsym $mod+Shift+3 move container to workspace number 3
+
+    bindsym $mod+s layout stacking
+    bindsym $mod+w layout tabbed
+    bindsym $mod+e layout toggle split
+    bindsym $mod+f fullscreen
+    bindsym $mod+Shift+space floating toggle
+
+    # Resize Mode
+    mode "resize" {
+        bindsym $left resize shrink width 10px
+        bindsym $down resize grow height 10px
+        bindsym $up resize shrink height 10px
+        bindsym $right resize grow width 10px
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+    }
+    bindsym $mod+r mode "resize"
+
+    bindsym $mod+Shift+c reload
+    bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit Sway?' -B 'Yes' 'swaymsg exit'
+
+### Key bindings - APPS (Muhenkan)
+    bindsym $app+Return exec $term
+    bindsym $app+d exec $menu
+    bindsym $app+space exec $menu
+    
+    # Scripts & Tools
+    bindsym $app+p exec ~/scripts/android_debug.sh
+    bindsym $app+Tab exec ~/scripts/window_switcher.sh
+    bindsym $app+v exec ~/scripts/vps_launcher.sh
+    
+    # Core Apps
+    bindsym $app+b exec $browser
+    bindsym $app+f exec $term -e env TERM=foot yazi
+    bindsym $app+h exec $term -e hx
+    bindsym $app+m exec $term -e aerc
+    bindsym $app+n exec $term -e newsboat
+    bindsym $app+k exec "pkill wvkbd-mobintl || wvkbd-mobintl -L 300"
+    
+    bindsym $app+w exec nm-connection-editor
+    bindsym $app+l exec ~/scripts/toggle_gui.sh blueman-manager blueman-manager
+
+# Audio/Brightness (Hardware Keys)
+bindsym --locked XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle && pkill -RTMIN+1 waybar
+bindsym --locked XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5% && pkill -RTMIN+1 waybar
+bindsym --locked XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5% && pkill -RTMIN+1 waybar
+bindsym --locked XF86MonBrightnessDown exec brightnessctl set 5%-
+bindsym --locked XF86MonBrightnessUp exec brightnessctl set 5%+
+
+# Print Screen
+bindsym Print exec ~/scripts/snip.sh
+
+# --- UI & Status ---
+exec_always sh -c 'pkill waybar; waybar'
+gaps inner 2
+smart_gaps on
+
+# Decorations
+client.focused          #cc7000 #cc7000 #ffffff #cc7000   #cc7000
+client.unfocused        #222222 #222222 #888888 #222222   #222222
+default_border pixel 0
+default_floating_border pixel 0
+
+# Floating rules
+for_window [app_id="swappy"] floating enable, focus, move position center
+for_window [app_id="blueman-manager"] floating enable, resize set 600 400, move position center

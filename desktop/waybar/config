@@ -1,0 +1,70 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 40, "output": "DSI-1",
+    "spacing": 4,
+    "modules-left": ["clock", "custom/weather", "sway/workspaces", "sway/mode"],
+    "modules-center": ["custom/help", "custom/keyboard", "custom/cpu_unified", "memory", "group/power_battery"],
+    "group/power_battery": {
+        "orientation": "horizontal",
+        "modules": [
+            "custom/cpu_status",
+            "custom/battery_unified"
+        ]
+    },
+    "custom/cpu_status": {
+        "interval": 5,
+        "exec": "~/scripts/power_profile_manager.sh status",
+        "return-type": "json",
+        "format": "{}",
+        "signal": 3
+    },
+    "modules-right": [
+        "network",
+        "bluetooth",
+        "custom/volume",
+        "backlight",
+        "custom/power"
+    ],
+    "custom/help": {
+        "format": "",
+        "tooltip-format": "FujiRuro-OS Shortcuts:\n\nSuper + Q : Close Window\nSuper + M : Toggle Waybar\nSuper + Arrows: Focus\nApp + Enter : Terminal\nApp + D/Spc: Launcher\nApp + B : Browser\nApp + F : Files (Yazi)\nApp + H : Editor (Helix)\n\n--- Hardware ---\n1x Click : Screenshot\n2x Clicks: Gemini CLI\n3x Clicks: Update System",
+        "on-click": "fuzzel"
+    },
+    "sway/workspaces": {
+        "disable-scroll": true,
+        "all-outputs": true,
+        "format": "{name}",
+        "on-click": "activate"
+    },
+    "clock": {
+        "interval": 1,
+        "format": " {:%Y-%m-%d %H:%M:%S}",
+        "on-click": "~/scripts/calendar_toggle.sh"
+    },
+    "custom/cpu_unified": {
+        "exec": "~/scripts/waybar_cpu_unified.sh",
+        "interval": 2,
+        "return-type": "json",
+        "format": "{}"
+    },
+    "custom/battery_unified": {
+        "exec": "~/scripts/waybar_battery_unified.sh",
+        "interval": 5,
+        "return-type": "json",
+        "on-click": "~/scripts/toggle_swaynag.sh 'Power Profiles' \"-B 'High Perf' '~/scripts/power_profile_manager.sh high' -B 'Normal' '~/scripts/power_profile_manager.sh normal' -B 'Low Power' '~/scripts/power_profile_manager.sh low'\"",
+        "format": "{}"
+    },
+    "custom/volume": {
+        "exec": "~/scripts/waybar_volume.sh",
+        "interval": 1,
+        "signal": 1,
+        "format": "{}",
+        "on-click": "~/scripts/audio_profile_switcher.sh menu",
+        "return-type": "json"
+    },
+    "custom/power": {
+        "format": "",
+        "on-click": "~/scripts/toggle_swaynag.sh 'System Power' \"-B 'Sleep' 'systemctl suspend' -B 'Reboot' 'systemctl reboot' -B 'Shutdown' 'systemctl poweroff'\""
+    }
+}

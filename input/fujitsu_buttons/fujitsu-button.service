@@ -1,0 +1,14 @@
+[Unit]
+Description=Fujitsu Hardware Button Handler for FujiRuro-OS
+After=sway.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /usr/local/bin/fujitsu_button_handler.py
+Restart=always
+RestartSec=5
+User=%i
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=default.target

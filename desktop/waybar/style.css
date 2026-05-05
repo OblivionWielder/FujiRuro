@@ -1,0 +1,31 @@
+* {
+    font-family: "Font Awesome 5 Free", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+window#waybar {
+    background-color: rgba(10, 10, 10, 0.95);
+    border-bottom: 2px solid #cc7000;
+    color: #cc7000;
+}
+
+tooltip {
+    background: #0a0a0a;
+    border: 2px solid #cc7000;
+    border-radius: 8px;
+}
+
+#workspaces button.focused {
+    color: #cc7000;
+    border-bottom: 2px solid #cc7000;
+    background: rgba(204, 112, 0, 0.1);
+}
+
+#clock, #custom-cpu_unified, #memory, #network, #custom-volume, #custom-power {
+    padding: 0 10px;
+    background-color: #1a1a1a;
+    margin: 4px 2px;
+    border-radius: 6px;
+    color: #cc7000;
+}
