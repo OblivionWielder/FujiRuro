@@ -27,7 +27,10 @@ We use **Sway** (a Wayland tiling window manager) because it handles display rot
 ### 3. Native Hardware Button Support
 We include a Python-based background service that monitors the kernel's `ftrace` pipe to detect physical button presses, allowing you to map them to actions like screenshots, launching a terminal, or system updates.
 
-### 4. Optimized Input (The Spanish-Nomadic Layout)
+### 4. Dynamic Screen Rotation
+Utilizing the tablet's built-in accelerometer via `iio-sensor-proxy`, we provide a dynamic listener that automatically rotates the Sway workspace and adapts the Waybar UI. In portrait mode, Waybar automatically switches to a high-density, multi-row layout to prevent widget overflow.
+
+### 5. Optimized Input (The Spanish-Nomadic Layout)
 Using **keyd**, we transform the Japanese JP106 keyboard into a powerhouse for Spanish-speaking developers, adding a custom layer for accents (á, é, í, ó, ú, ñ) and remapping underutilized keys to common application shortcuts.
 
 ### 5. Extreme Efficiency

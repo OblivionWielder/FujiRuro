@@ -10,10 +10,34 @@ window#waybar {
     color: #cc7000;
 }
 
+window#waybar.top-row {
+    border-bottom: none;
+}
+
+/* Tooltip Styling - Dark & Orange */
 tooltip {
     background: #0a0a0a;
     border: 2px solid #cc7000;
     border-radius: 8px;
+}
+
+tooltip label {
+    color: #cc7000;
+    font-size: 13px;
+    padding: 10px;
+}
+
+/* Workspaces */
+#workspaces button {
+    padding: 0 8px;
+    background-color: transparent;
+    color: #888888;
+    border-bottom: 2px solid transparent;
+}
+
+#workspaces button:hover {
+    background: rgba(204, 112, 0, 0.2);
+    color: #cc7000;
 }
 
 #workspaces button.focused {
@@ -22,10 +46,108 @@ tooltip {
     background: rgba(204, 112, 0, 0.1);
 }
 
-#clock, #custom-cpu_unified, #memory, #network, #custom-volume, #custom-power {
+/* Common Module Style */
+#clock,
+#custom-cpu_unified,
+#memory,
+#disk,
+#backlight,
+#network,
+#pulseaudio,
+#custom-volume,
+#bluetooth,
+#custom-keyboard,
+#custom-help,
+#custom-cheatsheet,
+#custom-weather,
+#custom-power,
+#group-power_battery {
     padding: 0 10px;
     background-color: #1a1a1a;
     margin: 4px 2px;
     border-radius: 6px;
     color: #cc7000;
+}
+
+#group-power_battery,
+#power_battery {
+    padding: 0;
+    background-color: #1a1a1a;
+    margin: 4px 2px;
+    border-radius: 6px;
+}
+
+#group-power_battery #custom-cpu_status,
+#power_battery #custom-cpu_status {
+    padding-left: 14px;
+    padding-right: 8px;
+    margin: 0;
+}
+
+#group-power_battery #custom-battery_unified,
+#power_battery #custom-battery_unified {
+    padding-left: 8px;
+    padding-right: 14px;
+    background-color: transparent;
+    margin: 0;
+}
+
+#group-power_battery #custom-battery_unified.warning,
+#power_battery #custom-battery_unified.warning {
+    background-color: #cc7000;
+    color: #111111;
+    border-radius: 0 6px 6px 0;
+}
+
+#group-power_battery #custom-battery_unified.critical,
+#power_battery #custom-battery_unified.critical {
+    background-color: #f53c3c;
+    color: #ffffff;
+    border-radius: 0 6px 6px 0;
+}
+#clock {
+    font-weight: bold;
+    color: #cc7000;
+    background-color: #1a1a1a;
+}
+
+/* Battery States */
+#battery.charging, #battery.plugged {
+    color: #26a65b;
+}
+
+#battery.warning:not(.charging) {
+    background-color: #cc7000;
+    color: #111111;
+}
+
+#battery.critical:not(.charging) {
+    background-color: #f53c3c;
+    color: #ffffff;
+    animation-name: blink;
+    animation-duration: 0.5s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
+/* Specific module tweaks */
+#custom-power {
+    background-color: #cc7000;
+    color: #111111;
+    margin-right: 8px;
+}
+
+#mode {
+    background-color: #cc7000;
+    color: #111111;
+    padding: 0 10px;
+    border-radius: 4px;
+}
+
+@keyframes blink {
+    to {
+        background-color: #ffffff;
+        color: #000000;
+    }
 }

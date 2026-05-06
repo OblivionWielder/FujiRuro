@@ -118,14 +118,28 @@ install_desktop() {
     # Copy scripts
     cp "$BASE_DIR/desktop/scripts/"* "$USER_HOME/scripts/"
     chmod +x "$USER_HOME/scripts/"*.sh
+    sed -i "s|{{USER_HOME}}|$USER_HOME|g" "$USER_HOME/scripts/"*
+    
+    # Dynamic Rotation Service
+    log "Setting up Dynamic Rotation service..."
+    mkdir -p "$USER_HOME/.config/systemd/user"
+    cp "$BASE_DIR/desktop/systemd/dynamic-rotation.service" "$USER_HOME/.config/systemd/user/"
+    sed -i "s|{{USER_HOME}}|$USER_HOME|g" "$USER_HOME/.config/systemd/user/dynamic-rotation.service"
     
     # Optional Waybar Theme
     if [ "$INCLUDE_THEME" = "y" ]; then
         cp "$BASE_DIR/desktop/waybar/"* "$CONFIG_DIR/waybar/"
-        sed -i "s|/home/oblivion|$USER_HOME|g" "$CONFIG_DIR/waybar/config"
+        sed -i "s|{{USER_HOME}}|$USER_HOME|g" "$CONFIG_DIR/waybar/"*
+        # Set initial symlink
+        ln -sf "$CONFIG_DIR/waybar/config.landscape" "$CONFIG_DIR/waybar/config"
     fi
     
-    chown -R "$SUDO_USER:$SUDO_USER" "$CONFIG_DIR/sway" "$CONFIG_DIR/waybar" "$USER_HOME/scripts"
+    chown -R "$SUDO_USER:$SUDO_USER" "$CONFIG_DIR/sway" "$CONFIG_DIR/waybar" "$USER_HOME/scripts" "$USER_HOME/.config/systemd/user"
+    
+    # Enable rotation service for the user
+    sudo -u "$SUDO_USER" XDG_RUNTIME_DIR="/run/user/$SUDO_UID" systemctl --user daemon-reload
+    sudo -u "$SUDO_USER" XDG_RUNTIME_DIR="/run/user/$SUDO_UID" systemctl --user enable dynamic-rotation.service
+    
     success "Desktop environment configured."
 }
 
