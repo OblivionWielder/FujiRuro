@@ -7,6 +7,13 @@
 # left-up -> 270 (Landscape Inverted)
 # right-up -> 90 (Landscape)
 
+# Function to ensure we have the Wayland/Sway environment
+import_env() {
+    if [ -z "$SWAYSOCK" ] || [ -z "$WAYLAND_DISPLAY" ]; then
+        eval $(systemctl --user show-environment | grep -E '^(WAYLAND_DISPLAY|SWAYSOCK|DISPLAY|XDG_CURRENT_DESKTOP)=')
+    fi
+}
+
 # Ensure monitor-sensor is running
 if ! pgrep -x "iio-sensor-prox" > /dev/null; then
     echo "iio-sensor-proxy is not running. Starting it..."
@@ -16,6 +23,8 @@ fi
 monitor-sensor | while read -r line; do
     if [[ "$line" == *"Accelerometer orientation changed:"* ]]; then
         orientation=$(echo "$line" | awk -F': ' '{print $2}')
+        import_env
+        
         case "$orientation" in
             "normal")
                 swaymsg output "*" transform 0
@@ -37,20 +46,24 @@ monitor-sensor | while read -r line; do
 
         if [ -n "$CONFIG" ]; then
             # Swap waybar config if different
-            ln -sf "$HOME/.config/waybar/$CONFIG" "$HOME/.config/waybar/config"
-            # Restart waybar (kill and it should be restarted by systemd or we do it manually)
-            # Actually, let's just use pkill and have it restarted or start it if not running.
-            pkill -USR2 waybar || waybar &
-            # Note: USR2 reloads config, but if we changed from single bar to array, 
-            # some versions of waybar might need a full restart.
-            # Let's use SIGUSR2 first, if it fails to handle array swap, we'll use a full restart.
-            # pkill -SIGUSR2 waybar
+            CURRENT_LINK=$(readlink "$HOME/.config/waybar/config")
+            TARGET_CONFIG="$HOME/.config/waybar/$CONFIG"
             
-            # Re-verify: Waybar 0.9.x+ handles config reload on SIGUSR2.
-            # However, swapping from 1 bar to 2 bars might be tricky for some versions.
-            # Let's just restart to be 100% sure and avoid ghost bars.
-            pkill waybar
-            waybar &
+            # Always ensure Waybar is running, even if config didn't change (crash recovery)
+            if [ "$CURRENT_LINK" != "$TARGET_CONFIG" ] || ! pgrep -x waybar > /dev/null; then
+                ln -sf "$TARGET_CONFIG" "$HOME/.config/waybar/config"
+                
+                # Robust Waybar restart
+                pkill waybar
+                # Wait up to 2 seconds for it to die
+                for i in {1..20}; do
+                    pgrep -x waybar > /dev/null || break
+                    sleep 0.1
+                done
+                # Start fresh with environment
+                WAYLAND_DISPLAY=$WAYLAND_DISPLAY SWAYSOCK=$SWAYSOCK waybar > /tmp/waybar.log 2>&1 &
+                echo "Waybar restarted for $orientation with $CONFIG"
+            fi
         fi
     fi
 done

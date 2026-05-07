@@ -19,7 +19,10 @@ The Fujitsu ARROWS Tab is a popular, affordable tablet on the second-hand market
 This repository provides a "Bootstrap" installation that addresses these issues through:
 
 ### 1. Kernel & Boot Optimizations
-We inject specific flags into GRUB to ensure the screen is rotated from the very first second of boot (`video=DSI-1:1200x1920,rotate=90`) and that the touchscreen driver is forced into a stable polling mode (`i2c_hid.polling_mode=1`).
+We inject specific flags into GRUB to ensure the screen is rotated from the very first second of boot (`video=DSI-1:1200x1920,rotate=90`). For older kernels, we used `i2c_hid.polling_mode=1`, but for modern kernels (6.12+) and BIOS v1.39, we use the `0x0010` (Bogus IRQ) quirk to silence touchscreen log flooding.
+
+### 2. BIOS & Firmware (CRITICAL)
+The Fujitsu Q5010 should be updated to **BIOS v1.39** to resolve "Intel Sensor Hub" (ISH) timeouts and timing-related I2C instabilities. This repo includes documentation on the EFI flash procedure for Linux users.
 
 ### 2. The Nomadic Desktop (Sway)
 We use **Sway** (a Wayland tiling window manager) because it handles display rotation and touchscreen mapping more efficiently and reliably than X11-based systems on this hardware. Our configuration includes a custom `calibration_matrix` for the FTSC1000.
